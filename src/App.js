@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import { Route } from 'react-router-dom';
-import { useQuery } from '@apollo/react-hooks';
+import { AuthContext } from '@8base/react-sdk';
+import { withApollo } from 'react-apollo';
+
+// TODO -- 1
+import { useQuery, useSubscription } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import Index from './pages/Index';
 import Generate from './pages/Generate';
 import Tickets from './pages/Tickets';
 
+import Auth from './pages/Auth';
 import './App.css';
 
-const GET_ATTENDIES = gql`
-  query {
-    attendeesList {
+// TODO -- 2
+const GET_ATTENDEES = gql`
+  query Attendees($searchTerm: String!) {
+    attendeesList(filter: { name: { contains: $searchTerm } }) {
       count
       items {
         name
@@ -27,30 +33,83 @@ const GET_ATTENDIES = gql`
   }
 `;
 
+const ATTENDEES_SUB = gql`
+  subscription AttendeeSub {
+    Attendees {
+      node {
+        mealTickets {
+          items {
+            id
+            valid
+          }
+        }
+        name
+      }
+      mutation
+    }
+  }
+`;
+
 function App() {
+  const RouterApp = withApollo(AppRouter);
   return (
     <section className="wrapper">
-      <AppRouter></AppRouter>
+      <RouterApp></RouterApp>
     </section>
   );
 }
 
-function AppRouter() {
-  const { loading, data } = useQuery(GET_ATTENDIES);
+function AppRouter({ client }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const { isAuthorized, authClient } = useContext(AuthContext);
+  // TODO --- 3
+  const { loading, data } = useQuery(GET_ATTENDEES, {
+    variables: { searchTerm },
+  });
+  const subscription = useSubscription(ATTENDEES_SUB);
+  console.log(subscription);
+
+  const logout = async () => {
+    await client.clearStore();
+    authClient.logout();
+  };
   return (
     <div>
-      <Route path="/" exact component={Index} />
       {loading ? (
         <p>Loading...</p>
       ) : (
         <>
+          {isAuthorized && (
+            <div className="logout-container">
+              <button className="logout-button" onClick={logout}>
+                <p>
+                  Logout <span>→</span>
+                </p>
+              </button>
+            </div>
+          )}
+
+          <Route path="/" exact component={Index} />
+          <Route path="/auth/callback" component={Auth} />
           <Route
             path="/generate/"
-            component={() => <Generate attendees={data.attendeesList.items} />}
+            component={() => (
+              <Generate
+                attendees={data.attendeesList.items}
+                search={setSearchTerm}
+                searchTerm={searchTerm}
+              />
+            )}
           />
           <Route
             path="/tickets/"
-            component={() => <Tickets attendees={data.attendeesList.items} />}
+            component={() => (
+              <Tickets
+                attendees={data.attendeesList.items}
+                search={setSearchTerm}
+                searchTerm={searchTerm}
+              />
+            )}
           />
         </>
       )}
