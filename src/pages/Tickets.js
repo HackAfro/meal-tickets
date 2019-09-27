@@ -1,11 +1,42 @@
-import React from 'react';
-import Ticket from '../components/Ticket';
-import { InvalidateButton } from '../components/Buttons';
+import React, { useEffect } from 'react';
+import gql from 'graphql-tag';
 
-export default function Tickets({attendees}) {
-  const attendeesWithValidTickets = hasValidTicket(attendees)
+import { useMutation } from '@apollo/react-hooks';
+
+import Ticket from '../components/Ticket';
+import { InvalidateButton, BackButton } from '../components/Buttons';
+
+const INVALIDATE_TICKET = gql`
+  mutation InvalidateTicket($data: MealTicketUpdateInput!) {
+    mealTicketUpdate(data: $data) {
+      id
+    }
+  }
+`;
+
+const getValidTicket = (tickets) => {
+  return tickets.find((ticket) => ticket.valid);
+};
+
+const onInvalidateClick = (tickets, inValidateTicket) => {
+  const validTicket = getValidTicket(tickets);
+  const data = {
+    variables: {
+      data: {
+        id: validTicket.id,
+        valid: false,
+      },
+    },
+  };
+  inValidateTicket(data);
+};
+
+export default function Tickets({ attendees, search, searchTerm }) {
+  const [mealTicketUpdate, { data }] = useMutation(INVALIDATE_TICKET);
+  const attendeesWithValidTickets = hasValidTicket(attendees);
   return (
     <>
+      <BackButton />
       <div className="search-wrapper-wp">
         <div className="search-wrapper">
           <a href="#search">
@@ -13,7 +44,12 @@ export default function Tickets({attendees}) {
               <use href="images/icons.svg#search"></use>
             </svg>
           </a>
-          <input id="search" type="search" />
+          <input
+            id="search"
+            type="search"
+            value={searchTerm}
+            onChange={(e) => search(e.target.value)}
+          />
         </div>
       </div>
       <div className="main-wrapper">
@@ -21,7 +57,14 @@ export default function Tickets({attendees}) {
         <ul className="search-result">
           {attendeesWithValidTickets.map((attendee) => (
             <Ticket attendee={attendee} key={attendee.id}>
-              <InvalidateButton></InvalidateButton>
+              <InvalidateButton
+                onClick={() =>
+                  onInvalidateClick(
+                    attendee.mealTickets.items,
+                    mealTicketUpdate
+                  )
+                }
+              ></InvalidateButton>
             </Ticket>
           ))}
         </ul>
@@ -31,13 +74,9 @@ export default function Tickets({attendees}) {
 }
 
 function hasValidTicket(attendees) {
-  return attendees.filter(attendee => {
+  return attendees.filter((attendee) => {
     const mealTickets = attendee.mealTickets.items;
-    const validTickets = mealTickets.filter(ticket => ticket.valid)
-    if (validTickets.length > 0) {
-      return true
-    } else {
-      return false
-    }
-  })
+    const validTickets = mealTickets.filter((ticket) => ticket.valid);
+    return validTickets.length > 0;
+  });
 }
