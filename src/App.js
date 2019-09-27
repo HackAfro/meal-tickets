@@ -3,7 +3,6 @@ import { Route } from 'react-router-dom';
 import { AuthContext } from '@8base/react-sdk';
 import { withApollo } from 'react-apollo';
 
-// TODO -- 1
 import { useQuery, useSubscription } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
@@ -14,7 +13,6 @@ import Tickets from './pages/Tickets';
 import Auth from './pages/Auth';
 import './App.css';
 
-// TODO -- 2
 const GET_ATTENDEES = gql`
   query Attendees($searchTerm: String!) {
     attendeesList(filter: { name: { contains: $searchTerm } }) {
@@ -62,7 +60,6 @@ function App() {
 function AppRouter({ client }) {
   const [searchTerm, setSearchTerm] = useState('');
   const { isAuthorized, authClient } = useContext(AuthContext);
-  // TODO --- 3
   const { loading, data } = useQuery(GET_ATTENDEES, {
     variables: { searchTerm },
   });
