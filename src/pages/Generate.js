@@ -1,11 +1,41 @@
-import React from 'react';
-import Ticket from '../components/Ticket';
-import { GenerateButton } from '../components/Buttons';
+import React, { useEffect } from 'react';
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
 
-export default function Generate({attendees}) {
-  const attendeesWithNoOrInvalidTickets = hasInvalidTicket(attendees)
+import { GenerateButton, BackButton } from '../components/Buttons';
+import Ticket from '../components/Ticket';
+
+const GENERATE_TICKET = gql`
+  mutation GenerateTicket($data: MealTicketCreateInput!) {
+    mealTicketCreate(data: $data) {
+      id
+    }
+  }
+`;
+
+const onGenerateClick = (attendeeId, generateTicket) => {
+  const data = {
+    variables: {
+      data: {
+        valid: true,
+        owner: {
+          connect: {
+            id: attendeeId,
+          },
+        },
+      },
+    },
+  };
+  generateTicket(data);
+};
+
+export default function Generate({ attendees, search, searchTerm }) {
+  const [mealTicketCreate, { data }] = useMutation(GENERATE_TICKET);
+  const attendeesWithNoOrInvalidTickets = hasInvalidTicket(attendees);
+
   return (
     <>
+      <BackButton />
       <div className="search-wrapper-wp">
         <div className="search-wrapper">
           <a href="#search">
@@ -13,7 +43,12 @@ export default function Generate({attendees}) {
               <use href="images/icons.svg#search"></use>
             </svg>
           </a>
-          <input id="search" type="search" />
+          <input
+            id="search"
+            type="search"
+            value={searchTerm}
+            onChange={(e) => search(e.target.value)}
+          />
         </div>
       </div>
       <div className="main-wrapper">
@@ -21,7 +56,9 @@ export default function Generate({attendees}) {
         <ul className="search-result">
           {attendeesWithNoOrInvalidTickets.map((attendee) => (
             <Ticket key={attendee.id} attendee={attendee}>
-              <GenerateButton></GenerateButton>
+              <GenerateButton
+                onClick={() => onGenerateClick(attendee.id, mealTicketCreate)}
+              ></GenerateButton>
             </Ticket>
           ))}
         </ul>
@@ -31,13 +68,8 @@ export default function Generate({attendees}) {
 }
 
 function hasInvalidTicket(attendees) {
-  return attendees.filter(attendee => {
-    const mealTickets = attendee.mealTickets.items;
-    const invalidTickets = mealTickets.filter(ticket => !ticket.valid)
-    if (invalidTickets.length > 0) {
-      return true
-    } else {
-      return false
-    }
-  })
+  return attendees.filter(({ mealTickets: { items: mealTickets = [] } }) => {
+    const hasInvalidTicket = mealTickets.every((ticket) => !ticket.valid);
+    return hasInvalidTicket;
+  });
 }
