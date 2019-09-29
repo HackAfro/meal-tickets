@@ -53,7 +53,7 @@ let Auth = ({ auth, client }) => {
         // After that token will be added to a request headers automatically
         auth.authClient.setState({
           token: idToken,
-          workspaceId: 'cjxotvdpv006501l68k94dz80',
+          workspaceId: 'cjvsrlv9k000201p3amkjgsfu',
         });
 
         setAuthorizing(false);
