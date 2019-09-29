@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Route } from 'react-router-dom';
 import { AuthContext } from '@8base/react-sdk';
 import { withApollo } from 'react-apollo';
@@ -33,15 +33,13 @@ const GET_ATTENDEES = gql`
 
 const ATTENDEES_SUB = gql`
   subscription AttendeeSub {
-    Attendees {
+    MealTickets {
       node {
-        mealTickets {
-          items {
-            id
-            valid
-          }
+        owner {
+          id
         }
-        name
+        id
+        valid
       }
       mutation
     }
@@ -59,17 +57,24 @@ function App() {
 
 function AppRouter({ client }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [attendees, setAttendees] = useState([]);
   const { isAuthorized, authClient } = useContext(AuthContext);
   const { loading, data } = useQuery(GET_ATTENDEES, {
     variables: { searchTerm },
   });
   const subscription = useSubscription(ATTENDEES_SUB);
-  console.log(subscription);
-
   const logout = async () => {
     await client.clearStore();
     authClient.logout();
   };
+
+  useEffect(() => {
+    if (!loading) {
+      setAttendees(data.attendeesList.items);
+      updateAttendeeRecord(subscription, attendees, setAttendees);
+    }
+  }, [data, subscription.data]);
+
   return (
     <div>
       {loading ? (
@@ -92,7 +97,7 @@ function AppRouter({ client }) {
             path="/generate/"
             component={() => (
               <Generate
-                attendees={data.attendeesList.items}
+                attendees={attendees}
                 search={setSearchTerm}
                 searchTerm={searchTerm}
               />
@@ -102,7 +107,7 @@ function AppRouter({ client }) {
             path="/tickets/"
             component={() => (
               <Tickets
-                attendees={data.attendeesList.items}
+                attendees={attendees}
                 search={setSearchTerm}
                 searchTerm={searchTerm}
               />
@@ -113,5 +118,39 @@ function AppRouter({ client }) {
     </div>
   );
 }
+
+const updateAttendeeRecord = (subRes, attendees, setAttendees) => {
+  if (subRes.data) {
+    const { node, mutation } = subRes.data.MealTickets;
+    const updatedAttendees = attendees.map((attendee) => {
+      if (node.owner.id === attendee.id) {
+        const tickets = attendee.mealTickets.items;
+        if (mutation === 'create') {
+          attendee.mealTickets = {
+            items: attendee.mealTickets.items.concat(node),
+          };
+          return attendee;
+        } else if (mutation === 'update') {
+          const updatedTickets = attendee.mealTickets.items.map((item) => {
+            if (item.id === node.id) {
+              return {
+                ...item,
+                ...node,
+              };
+            }
+            return item;
+          });
+          attendee.mealTickets = {
+            items: updatedTickets,
+          };
+          return attendee;
+        }
+      } else {
+        return attendee;
+      }
+    });
+    setAttendees(updatedAttendees);
+  }
+};
 
 export default App;
