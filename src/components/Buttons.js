@@ -3,17 +3,18 @@ import { Link } from 'react-router-dom';
 
 import BackIcon from '../arrow-left.svg';
 
-export function InvalidateButton({ onClick, ...props }) {
+// TODO Add click listeners to all the buttons
+export function InvalidateButton() {
   return (
-    <button className="invalidate-btn" onClick={onClick} {...props}>
+    <button className="invalidate-btn">
       Invalidate
     </button>
   );
 }
 
-export function GenerateButton({ onClick, ...props }) {
+export function GenerateButton() {
   return (
-    <button className="invalidate-btn" onClick={onClick} {...props}>
+    <button className="invalidate-btn">
       Generate
     </button>
   );

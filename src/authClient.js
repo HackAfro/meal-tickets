@@ -1,8 +1,8 @@
 import { Auth, AUTH_STRATEGIES } from '@8base/auth';
 
-const AUTH0_CLIENT_ID = 'xDxu32AZvQj39zXpwgQie6Ispc1NWS0y';
+const AUTH0_CLIENT_ID = 'AUTH_CLIENT_ID';
 const AUTH0_CLIENT_DOMAIN = 'secure.8base.com';
-export const AUTH_PROFILE_ID = 'ck113t7to001o01l42yfp2kzd';
+export const AUTH_PROFILE_ID = 'AUTH_PROFILE_ID';
 
 const REDIRECT_URI = `${document.location.origin}/auth/callback`;
 

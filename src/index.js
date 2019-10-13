@@ -12,7 +12,7 @@ import './index.css';
 import './css/style.css';
 import './css/font.css';
 
-const URI = 'https://api.8base.com/cjvsrlv9k000201p3amkjgsfu';
+const URI = 'YOUR_8BASE_URI';
 
 ReactDOM.render(
   <AppProvider uri={URI} authClient={authClient} withSubscriptions>

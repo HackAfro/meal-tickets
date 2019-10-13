@@ -1,36 +1,24 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+
+// TODO - 1 Add imports
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 
 import { GenerateButton, BackButton } from '../components/Buttons';
 import Ticket from '../components/Ticket';
 
-const GENERATE_TICKET = gql`
-  mutation GenerateTicket($data: MealTicketCreateInput!) {
-    mealTicketCreate(data: $data) {
-      id
-    }
-  }
+// TODO - 2 Define generate tickets query
+const GENERATE_TICKET = `
+  
 `;
 
-const onGenerateClick = (attendeeId, generateTicket) => {
-  const data = {
-    variables: {
-      data: {
-        valid: true,
-        owner: {
-          connect: {
-            id: attendeeId,
-          },
-        },
-      },
-    },
-  };
-  generateTicket(data);
+// TODO - 5 Define click handler for generating tickets
+const onGenerateClick = () => {
+  
 };
 
 export default function Generate({ attendees, search, searchTerm }) {
-  const [mealTicketCreate, { data }] = useMutation(GENERATE_TICKET);
+  //TODO - 3 Add useMutation hook
   const attendeesWithNoOrInvalidTickets = hasInvalidTicket(attendees);
 
   return (
@@ -57,7 +45,8 @@ export default function Generate({ attendees, search, searchTerm }) {
           {attendeesWithNoOrInvalidTickets.map((attendee) => (
             <Ticket key={attendee.id} attendee={attendee}>
               <GenerateButton
-                onClick={() => onGenerateClick(attendee.id, mealTicketCreate)}
+                // TODO 4 - Add onClick event handler for generating the ticket
+              
               ></GenerateButton>
             </Ticket>
           ))}

@@ -1,38 +1,25 @@
-import React, { useEffect } from 'react';
-import gql from 'graphql-tag';
+import React from 'react';
 
-import { useMutation } from '@apollo/react-hooks';
+// TODO - 1 define imports
 
 import Ticket from '../components/Ticket';
 import { InvalidateButton, BackButton } from '../components/Buttons';
 
-const INVALIDATE_TICKET = gql`
-  mutation InvalidateTicket($data: MealTicketUpdateInput!) {
-    mealTicketUpdate(data: $data) {
-      id
-    }
-  }
-`;
+// TODO - 2 define mutation query for invalidating tickets
+const INVALIDATE_TICKET = ``;
 
 const getValidTicket = (tickets) => {
   return tickets.find((ticket) => ticket.valid);
 };
 
-const onInvalidateClick = (tickets, inValidateTicket) => {
-  const validTicket = getValidTicket(tickets);
-  const data = {
-    variables: {
-      data: {
-        id: validTicket.id,
-        valid: false,
-      },
-    },
-  };
-  inValidateTicket(data);
+// TODO define onclick event handler for invalidating tickets
+const onInvalidateClick = () => {
+  
 };
 
 export default function Tickets({ attendees, search, searchTerm }) {
-  const [mealTicketUpdate, { data }] = useMutation(INVALIDATE_TICKET);
+  // TODO - 3 call the useMutation hook with mutation string as an argument
+
   const attendeesWithValidTickets = hasValidTicket(attendees);
   return (
     <>
@@ -58,12 +45,8 @@ export default function Tickets({ attendees, search, searchTerm }) {
           {attendeesWithValidTickets.map((attendee) => (
             <Ticket attendee={attendee} key={attendee.id}>
               <InvalidateButton
-                onClick={() =>
-                  onInvalidateClick(
-                    attendee.mealTickets.items,
-                    mealTicketUpdate
-                  )
-                }
+              // TODO - 4 Add click listener to the button and define and event handler
+                
               ></InvalidateButton>
             </Ticket>
           ))}

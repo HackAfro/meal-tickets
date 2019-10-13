@@ -1,4 +1,17 @@
+/*
+TODO - 1 Define all imports
+TODO - 2 Define query to fetch all attendees
+TODO - 3 Call the useQuery hook by passing the query string as an argument
+TODO - 4 Setup search functionality using useState
+TODO - 5 Display logout button when user is authorized
+TODO - 6 Define subscription query for meal tickets
+TODO - 7 Define state variable to store list of attendees returned
+TODO - 8 Define function to update the list when data is returned from the subscription
+*/
+
 import React, { useState, useContext, useEffect } from 'react';
+
+// TODO - 1 declare imports
 import { Route } from 'react-router-dom';
 import { AuthContext } from '@8base/react-sdk';
 import { withApollo } from 'react-apollo';
@@ -13,37 +26,10 @@ import Tickets from './pages/Tickets';
 import Auth from './pages/Auth';
 import './App.css';
 
-const GET_ATTENDEES = gql`
-  query Attendees($searchTerm: String!) {
-    attendeesList(filter: { name: { contains: $searchTerm } }) {
-      count
-      items {
-        name
-        id
-        mealTickets {
-          items {
-            id
-            valid
-          }
-        }
-      }
-    }
-  }
+const GET_ATTENDEES = `
 `;
 
-const ATTENDEES_SUB = gql`
-  subscription AttendeeSub {
-    MealTickets {
-      node {
-        owner {
-          id
-        }
-        id
-        valid
-      }
-      mutation
-    }
-  }
+const ATTENDEES_SUB = `
 `;
 
 function App() {
@@ -56,50 +42,20 @@ function App() {
 }
 
 function AppRouter({ client }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [attendees, setAttendees] = useState([]);
-  const { isAuthorized, authClient } = useContext(AuthContext);
-  const { loading, data } = useQuery(GET_ATTENDEES, {
-    variables: { searchTerm },
-  });
-  const subscription = useSubscription(ATTENDEES_SUB);
-  const logout = async () => {
-    await client.clearStore();
-    authClient.logout();
-  };
-
-  useEffect(() => {
-    if (!loading) {
-      setAttendees(data.attendeesList.items);
-      updateAttendeeRecord(subscription, attendees, setAttendees);
-    }
-  }, [data, subscription.data]);
-
+  const {loading, data} = useQuery(GET_ATTENDEES)
   return (
     <div>
-      {loading ? (
+      { ? (
         <p>Loading...</p>
       ) : (
         <>
-          {isAuthorized && (
-            <div className="logout-container">
-              <button className="logout-button" onClick={logout}>
-                <p>
-                  Logout <span>→</span>
-                </p>
-              </button>
-            </div>
-          )}
-
           <Route path="/" exact component={Index} />
           <Route path="/auth/callback" component={Auth} />
           <Route
             path="/generate/"
             component={() => (
               <Generate
-                attendees={attendees}
-                search={setSearchTerm}
-                searchTerm={searchTerm}
+                
               />
             )}
           />
@@ -107,9 +63,6 @@ function AppRouter({ client }) {
             path="/tickets/"
             component={() => (
               <Tickets
-                attendees={attendees}
-                search={setSearchTerm}
-                searchTerm={searchTerm}
               />
             )}
           />
@@ -119,38 +72,8 @@ function AppRouter({ client }) {
   );
 }
 
-const updateAttendeeRecord = (subRes, attendees, setAttendees) => {
-  if (subRes.data) {
-    const { node, mutation } = subRes.data.MealTickets;
-    const updatedAttendees = attendees.map((attendee) => {
-      if (node.owner.id === attendee.id) {
-        const tickets = attendee.mealTickets.items;
-        if (mutation === 'create') {
-          attendee.mealTickets = {
-            items: attendee.mealTickets.items.concat(node),
-          };
-          return attendee;
-        } else if (mutation === 'update') {
-          const updatedTickets = attendee.mealTickets.items.map((item) => {
-            if (item.id === node.id) {
-              return {
-                ...item,
-                ...node,
-              };
-            }
-            return item;
-          });
-          attendee.mealTickets = {
-            items: updatedTickets,
-          };
-          return attendee;
-        }
-      } else {
-        return attendee;
-      }
-    });
-    setAttendees(updatedAttendees);
-  }
+const updateAttendeeRecord = () => {
+  
 };
 
 export default App;

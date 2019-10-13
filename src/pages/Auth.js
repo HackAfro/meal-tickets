@@ -51,9 +51,11 @@ let Auth = ({ auth, client }) => {
 
         // After successful signup store token in local storage
         // After that token will be added to a request headers automatically
+
+        // TODO replace replace placeholder value with your workspace id
         auth.authClient.setState({
           token: idToken,
-          workspaceId: 'cjvsrlv9k000201p3amkjgsfu',
+          workspaceId: 'YOUR_WORKSPACE_ID',
         });
 
         setAuthorizing(false);
