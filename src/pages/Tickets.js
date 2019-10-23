@@ -13,14 +13,11 @@ const getValidTicket = (tickets) => {
 };
 
 // TODO define onclick event handler for invalidating tickets
-const onInvalidateClick = () => {
-  
-};
+const onInvalidateClick = () => {};
 
-export default function Tickets({ attendees, search, searchTerm }) {
+export default function Tickets({ attendees }) {
   // TODO - 3 call the useMutation hook with mutation string as an argument
 
-  const attendeesWithValidTickets = hasValidTicket(attendees);
   return (
     <>
       <BackButton />
@@ -31,35 +28,20 @@ export default function Tickets({ attendees, search, searchTerm }) {
               <use href="images/icons.svg#search"></use>
             </svg>
           </a>
-          <input
-            id="search"
-            type="search"
-            value={searchTerm}
-            onChange={(e) => search(e.target.value)}
-          />
+          <input id="search" type="search" />
         </div>
       </div>
       <div className="main-wrapper">
         <h2 className="page-title">SEARCH RESULT</h2>
         <ul className="search-result">
-          {attendeesWithValidTickets.map((attendee) => (
-            <Ticket attendee={attendee} key={attendee.id}>
-              <InvalidateButton
-              // TODO - 4 Add click listener to the button and define and event handler
-                
-              ></InvalidateButton>
-            </Ticket>
-          ))}
+          {/* Loop through attendees with valid tickets */}
+          <Ticket attendee={{}} key={''}>
+            <InvalidateButton
+            // TODO - 4 Add click listener to the button and define and event handler
+            ></InvalidateButton>
+          </Ticket>
         </ul>
       </div>
     </>
   );
-}
-
-function hasValidTicket(attendees) {
-  return attendees.filter((attendee) => {
-    const mealTickets = attendee.mealTickets.items;
-    const validTickets = mealTickets.filter((ticket) => ticket.valid);
-    return validTickets.length > 0;
-  });
 }
