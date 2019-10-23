@@ -26,11 +26,9 @@ import Tickets from './pages/Tickets';
 import Auth from './pages/Auth';
 import './App.css';
 
-const GET_ATTENDEES = `
-`;
+const GET_ATTENDEES = ``;
 
-const ATTENDEES_SUB = `
-`;
+const ATTENDEES_SUB = ``;
 
 function App() {
   const RouterApp = withApollo(AppRouter);
@@ -42,38 +40,18 @@ function App() {
 }
 
 function AppRouter({ client }) {
-  const {loading, data} = useQuery(GET_ATTENDEES)
   return (
     <div>
-      { ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <Route path="/" exact component={Index} />
-          <Route path="/auth/callback" component={Auth} />
-          <Route
-            path="/generate/"
-            component={() => (
-              <Generate
-                
-              />
-            )}
-          />
-          <Route
-            path="/tickets/"
-            component={() => (
-              <Tickets
-              />
-            )}
-          />
-        </>
-      )}
+      <>
+        <Route path="/" exact component={Index} />
+        <Route path="/auth/callback" component={Auth} />
+        <Route path="/generate/" component={() => <Generate />} />
+        <Route path="/tickets/" component={() => <Tickets />} />
+      </>
     </div>
   );
 }
 
-const updateAttendeeRecord = () => {
-  
-};
+const updateAttendeeRecord = () => {};
 
 export default App;
