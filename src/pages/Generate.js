@@ -13,13 +13,11 @@ const GENERATE_TICKET = `
 `;
 
 // TODO - 5 Define click handler for generating tickets
-const onGenerateClick = () => {
-  
-};
+const onGenerateClick = () => {};
 
 export default function Generate({ attendees, search, searchTerm }) {
   //TODO - 3 Add useMutation hook
-  const attendeesWithNoOrInvalidTickets = hasInvalidTicket(attendees);
+  
 
   return (
     <>
@@ -45,8 +43,7 @@ export default function Generate({ attendees, search, searchTerm }) {
           {attendeesWithNoOrInvalidTickets.map((attendee) => (
             <Ticket key={attendee.id} attendee={attendee}>
               <GenerateButton
-                // TODO 4 - Add onClick event handler for generating the ticket
-              
+              // TODO 4 - Add onClick event handler for generating the ticket
               ></GenerateButton>
             </Ticket>
           ))}
