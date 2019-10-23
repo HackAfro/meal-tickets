@@ -15,9 +15,8 @@ const GENERATE_TICKET = `
 // TODO - 5 Define click handler for generating tickets
 const onGenerateClick = () => {};
 
-export default function Generate({ attendees, search, searchTerm }) {
+export default function Generate({ attendees }) {
   //TODO - 3 Add useMutation hook
-  
 
   return (
     <>
@@ -29,24 +28,18 @@ export default function Generate({ attendees, search, searchTerm }) {
               <use href="images/icons.svg#search"></use>
             </svg>
           </a>
-          <input
-            id="search"
-            type="search"
-            value={searchTerm}
-            onChange={(e) => search(e.target.value)}
-          />
+          <input id="search" type="search" />
         </div>
       </div>
       <div className="main-wrapper">
         <h2 className="page-title">SEARCH RESULT</h2>
         <ul className="search-result">
-          {attendeesWithNoOrInvalidTickets.map((attendee) => (
-            <Ticket key={attendee.id} attendee={attendee}>
-              <GenerateButton
-              // TODO 4 - Add onClick event handler for generating the ticket
-              ></GenerateButton>
-            </Ticket>
-          ))}
+          {/* Loop through filtered attendees list*/}
+          <Ticket key={''} attendee={{}}>
+            <GenerateButton
+            // TODO 4 - Add onClick event handler for generating the ticket
+            ></GenerateButton>
+          </Ticket>
         </ul>
       </div>
     </>
