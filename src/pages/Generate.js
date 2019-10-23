@@ -55,10 +55,3 @@ export default function Generate({ attendees, search, searchTerm }) {
     </>
   );
 }
-
-function hasInvalidTicket(attendees) {
-  return attendees.filter(({ mealTickets: { items: mealTickets = [] } }) => {
-    const hasInvalidTicket = mealTickets.every((ticket) => !ticket.valid);
-    return hasInvalidTicket;
-  });
-}
